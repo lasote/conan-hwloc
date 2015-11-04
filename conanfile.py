@@ -17,9 +17,9 @@ class HWLOCConan(ConanFile):
     
     def system_requirements(self):
         if self.settings.os == "Linux":
-            self.run("sudo apt-get install libudev1 libudev1:i386")
-            self.run("sudo apt-get install libudev-dev libudev-dev:i386")
-            self.run("sudo apt-get install libxml2-dev libxml2-dev:i386")
+            self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
+            self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
+            self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
 
     def conan_info(self):
         # We don't want to change the package for each compiler version but
