@@ -17,6 +17,8 @@ class HWLOCConan(ConanFile):
     
     def system_requirements(self):
         if self.settings.os == "Linux":
+            self.run("sudo apt-get install libudev-dev")
+            self.run("sudo apt-get install libxml2-dev")
             self.run("sudo apt-get install libudev-dev:i386")
             self.run("sudo apt-get install libxml2-dev:i386")
 
@@ -77,7 +79,8 @@ class HWLOCConan(ConanFile):
                 if self.settings.os == "Macos":
                     self.copy(pattern="*.dylib", dst="lib", keep_path=False)
                 else:
-                    self.copy(pattern="*.so*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                    self.copy(pattern="*.so", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                    self.copy(pattern="*.so.*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 

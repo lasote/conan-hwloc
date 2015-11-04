@@ -42,17 +42,17 @@ if __name__ == "__main__":
     else:  # Compiler and version not specified, please set it in your home/.conan/conan.conf (Valid for Macos and Linux)
         if not os.getenv("TRAVIS", False):  
             # Static x86
-            test('-s arch=x86 -s build_type=Debug -o zlib:shared=False')
-            test('-s arch=x86 -s build_type=Release -o zlib:shared=False')
+            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=False')
+            test('-s arch=x86 -s build_type=Release -o hwloc:shared=False')
     
             # Shared x86
-            test('-s arch=x86 -s build_type=Debug -o zlib:shared=True')
-            test('-s arch=x86 -s build_type=Release -o zlib:shared=True')
+            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=True')
+            test('-s arch=x86 -s build_type=Release -o hwloc:shared=True')
 
         # Static x86_64
-        test('-s arch=x86_64 -s build_type=Debug -o zlib:shared=False')
-        test('-s arch=x86_64 -s build_type=Release -o zlib:shared=False')
+        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=False')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
 
         # Shared x86_64
-        test('-s arch=x86_64 -s build_type=Debug -o zlib:shared=True')
-        test('-s arch=x86_64 -s build_type=Release -o zlib:shared=True')
+        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
