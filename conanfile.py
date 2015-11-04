@@ -17,6 +17,7 @@ class HWLOCConan(ConanFile):
     
     def system_requirements(self):
         if self.settings.os == "Linux":
+            self.run("sudo apt-get install libudev0 libudev0:i386 || true ")
             self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
             self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
             self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
