@@ -28,6 +28,8 @@ class HWLOCConan(ConanFile):
         # We don't want to change the package for each compiler version but
         # we need the setting to compile with cmake
         self.info.settings.compiler.version = "any"
+        if self.settings.os == "Windows":
+            self.info.settings.build_type = "Release"
 
     def source(self):
         zip_name = "hwloc.tar.gz"
@@ -51,19 +53,26 @@ class HWLOCConan(ConanFile):
             
             self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s" % (self.ZIP_FOLDER_NAME, arch, shared_options))
             self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
-        else:
-#             cmake = CMake(self.settings)
-#             if self.settings.os == "Windows":
-#                 self.run("IF not exist _build mkdir _build")
-#             else:
-#                 self.run("mkdir _build")
-#             cd_build = "cd _build"
-#             self.output.warn('%s && cmake .. %s' % (cd_build, cmake.command_line))
-#             self.run('%s && cmake .. %s' % (cd_build, cmake.command_line))
-#             self.output.warn("%s && cmake --build . %s" % (cd_build, cmake.build_config))
-#             self.run("%s && cmake --build . %s" % (cd_build, cmake.build_config))
-            pass
+        elif self.settings.os == "Windows":
+            runtimes = {"MD": "MultiThreadedDLL",
+                        "MDd": "MultiThreadedDebugDLL",
+                        "MT": "MultiThreaded",
+                        "MTd": "MultiThreadedDebug"}
+            runtime = runtimes[str(self.settings.compiler.runtime)]
+            file_path = "%s/contrib/windows/libhwloc.vcxproj" % self.ZIP_FOLDER_NAME
+            # Adjust runtime in project solution
+            replace_in_file(file_path, "MultiThreadedDLL", runtime)
+            
+            platform, configuration = self.visual_platform_and_config()
+            msbuild = 'Msbuild.exe hwloc.sln /m /t:libhwloc /p:Configuration=%s;Platform="%s"' % (configuration, platform)
+            self.output.info(msbuild)
+            self.run("cd %s/contrib/windows/ &&  %s" % (self.ZIP_FOLDER_NAME, msbuild))
 
+    def visual_platform_and_config(self):
+        platform = "Win32" if self.settings.arch == "x86" else "x64"
+        configuration = "Release" if self.options.shared else "ReleaseStatic" 
+        return platform, configuration
+    
     def package(self):
         """ Define your conan structure: headers, libs, bins and data. After building your
             project, this method is called to create a defined structure:
@@ -72,9 +81,12 @@ class HWLOCConan(ConanFile):
 
         # Copying static and dynamic libs
         if self.settings.os == "Windows":
+            platform, configuration = self.visual_platform_and_config()
+            src = "%s/contrib/windows/%s/%s" % (self.ZIP_FOLDER_NAME, platform, configuration)
+            
             if self.options.shared:
-                self.copy(pattern="*.dll", dst="bin", src=self.ZIP_FOLDER_NAME, keep_path=False)
-            self.copy(pattern="*.lib", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                self.copy(pattern="*.dll", dst="bin", src=src, keep_path=False)
+            self.copy(pattern="*.lib", dst="lib", src=src, keep_path=False)
 
         else:
             if self.options.shared:
@@ -87,9 +99,16 @@ class HWLOCConan(ConanFile):
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['hwloc']
         if self.settings.os == "Linux":
-            self.cpp_info.libs.extend(["udev", "xml2"])
+            self.cpp_info.libs = ["hwloc", "udev", "xml2"]
+        elif self.settings.os == "Macos":
+            self.cpp_info.libs = ['hwloc']
+        elif self.settings.os == "Windows":
+            if self.options.shared: 
+                self.cpp_info.libs = ["libhwloc"]
+            else:
+                self.cpp_info.libs = ["libhwloc-5"]
+                
 
 
 def replace_in_file(file_path, search, replace):
