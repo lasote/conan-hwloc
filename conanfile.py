@@ -1,7 +1,6 @@
 from conans import ConanFile
 import os
-from conans.tools import download
-from conans.tools import unzip
+from conans.tools import download, unzip, replace_in_file
 from conans import CMake
 
 
@@ -13,7 +12,7 @@ class HWLOCConan(ConanFile):
     options = {"shared": [True, False]}
     default_options = "shared=False"
     exports = "CMakeLists.txt"
-    url="http://github.com/lasote/conan-zlib"
+    url="http://github.com/lasote/conan-hwloc"
     
     def system_requirements(self):
         if self.settings.os == "Linux":
@@ -106,12 +105,3 @@ class HWLOCConan(ConanFile):
                 self.cpp_info.libs = ["libhwloc"]
             else:
                 self.cpp_info.libs = ["libhwloc-5"]
-                
-
-
-def replace_in_file(file_path, search, replace):
-    with open(file_path, 'r') as content_file:
-        content = content_file.read()
-        content = content.replace(search, replace)
-    with open(file_path, 'wb') as handle:
-        handle.write(content)
