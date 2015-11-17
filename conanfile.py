@@ -15,7 +15,9 @@ class HWLOCConan(ConanFile):
     url="http://github.com/lasote/conan-hwloc"
     
     def system_requirements(self):
+        self.global_system_requirements=True
         if self.settings.os == "Linux":
+            self.output.warn("'libudev' library is required in your computer. Enter sudo password if required...")
             self.run("sudo apt-get install libudev0 libudev0:i386 || true ")
             self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
             self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
