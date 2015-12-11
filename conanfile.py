@@ -77,7 +77,7 @@ class HWLOCConan(ConanFile):
             project, this method is called to create a defined structure:
         """
         
-        self.copy("findHwloc.cmake", ".", ".")
+        self.copy("FindHwloc.cmake", ".", ".")
         self.copy(pattern="*.h", dst="include", src="%s/include" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         # Copying static and dynamic libs
