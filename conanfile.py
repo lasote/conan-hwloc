@@ -11,7 +11,7 @@ class HWLOCConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=False"
-    exports = "CMakeLists.txt"
+    exports = ["CMakeLists.txt", "FindHwloc.cmake"]
     url="http://github.com/lasote/conan-hwloc"
     
     def system_requirements(self):
@@ -26,7 +26,7 @@ class HWLOCConan(ConanFile):
     def conan_info(self):
         # We don't want to change the package for each compiler version but
         # we need the setting to compile with cmake
-        self.info.settings.compiler.version = "any"
+        # self.info.settings.compiler.version = "any"
         if self.settings.os == "Windows":
             self.info.settings.build_type = "Release"
 
@@ -76,6 +76,8 @@ class HWLOCConan(ConanFile):
         """ Define your conan structure: headers, libs, bins and data. After building your
             project, this method is called to create a defined structure:
         """
+        
+        self.copy("findHwloc.cmake", ".", ".")
         self.copy(pattern="*.h", dst="include", src="%s/include" % (self.ZIP_FOLDER_NAME), keep_path=True)
 
         # Copying static and dynamic libs
